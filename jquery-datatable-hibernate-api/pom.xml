@@ -2,9 +2,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>jquery-datatable-hibernate</groupId>
 	<artifactId>jquery-datatable-hibernate-api</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
 	<name>jquery-datatable-hibernate-api</name>
 
 	<parent>
@@ -13,6 +11,33 @@
 		<version>0.0.1-SNAPSHOT</version>
 		<relativePath>../jquery-datatable-hibernate/pom.xml</relativePath>
 	</parent>
-	
-	
+
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<configuration>
+						<source>1.6</source>
+						<target>1.6</target>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-api</artifactId>
+			<version>2.6</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.7.21</version>
+		</dependency>
+	</dependencies>
+
 </project>
