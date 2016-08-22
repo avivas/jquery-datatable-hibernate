@@ -2,16 +2,21 @@ package jdh.datatable;
 
 import java.util.Map;
 
-public class SearchOrder
+public class DataTableParameters
 {
+    //TODO AGREGAR PARMETRO DE LIKE 'VALOR%' o '%VALOR'
+    private int maxResults;
+    private int firstResult;
     private String field;
     private boolean asc = true;
     private Map<String, Object> searchMap;
 
-    public SearchOrder(String field, boolean asc)
+    public DataTableParameters(String field, boolean asc,int firstResult,int maxResults)
     {
         setField(field);
         setAsc(asc);
+        setMaxResults(maxResults);
+        setFirstResult(firstResult);
     }
 
     public String getField()
@@ -43,4 +48,24 @@ public class SearchOrder
     {
         this.searchMap = searchMap;
     }
+
+    public int getMaxResults()
+    {
+        return maxResults;
+    }
+
+    public void setMaxResults(int maxResults)
+    {
+        this.maxResults = maxResults;
+    }
+
+    public int getFirstResult()
+    {
+        return firstResult;
+    }
+
+    public void setFirstResult(int firstResult)
+    {
+        this.firstResult = firstResult;
+    }    
 }

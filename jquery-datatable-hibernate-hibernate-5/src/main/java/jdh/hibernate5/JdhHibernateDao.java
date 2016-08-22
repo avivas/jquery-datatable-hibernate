@@ -9,7 +9,7 @@ import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.Metamodel;
 
-import jdh.datatable.SearchOrder;
+import jdh.datatable.DataTableParameters;
 
 import org.hibernate.Session;
 import org.hibernate.query.Query;
@@ -21,9 +21,7 @@ public class JdhHibernateDao<T_ENTITY>
     private String allQuery;
     private String entityAlias;
     private String allQueryWithRelations;
-    
     private JdhSessionFactory sessionFactory; 
-
 
     public JdhHibernateDao(Class<T_ENTITY> clazz)
     {
@@ -32,32 +30,32 @@ public class JdhHibernateDao<T_ENTITY>
         this.clazz = clazz;
     }
 
-    public List<T_ENTITY> search(int maxResults, int firstResult, SearchOrder searchOrder)
+    public List<T_ENTITY> search(DataTableParameters dataTableParameters)
     {
-        return search(allQuery,maxResults, firstResult,searchOrder);
+        return search(allQuery,dataTableParameters);
     }
     
-    public List<T_ENTITY> searchWithRelations(int maxResults, int firstResult, SearchOrder searchOrder)
+    public List<T_ENTITY> searchWithRelations(DataTableParameters dataTableParameters)
     {
         createQueryWithRelations();
-        return search(allQueryWithRelations,maxResults, firstResult,searchOrder);
+        return search(allQueryWithRelations,dataTableParameters);
     }
 
-    private List<T_ENTITY> search(String baseQuery,int maxResults, int firstResult, SearchOrder searchOrder)
+    private List<T_ENTITY> search(String baseQuery,DataTableParameters dataTableParameters)
     {
         Session session = this.getCurrentSession();
 
         StringBuilder stringBuilder = new StringBuilder(baseQuery);
         
-        if ((searchOrder.getSearchMap() != null) && !searchOrder.getSearchMap().isEmpty())
+        if ((dataTableParameters.getSearchMap() != null) && !dataTableParameters.getSearchMap().isEmpty())
         {
             stringBuilder.append(" where ");
-            Iterator<String> fields = searchOrder.getSearchMap().keySet().iterator();
+            Iterator<String> fields = dataTableParameters.getSearchMap().keySet().iterator();
             
             while (fields.hasNext())
             {
                 String field = fields.next();
-                if (searchOrder.getSearchMap().get(field) instanceof String)
+                if (dataTableParameters.getSearchMap().get(field) instanceof String)
                 {
                     stringBuilder.append("str(");
                     stringBuilder.append(this.entityAlias);
@@ -83,23 +81,23 @@ public class JdhHibernateDao<T_ENTITY>
             }
         }
 
-        if (searchOrder.getField() != null)
+        if (dataTableParameters.getField() != null)
         {
             stringBuilder.append(" order by ");
             stringBuilder.append(this.entityAlias);
             stringBuilder.append(".");
-            stringBuilder.append(searchOrder.getField());
+            stringBuilder.append(dataTableParameters.getField());
             stringBuilder.append(" ");
-            stringBuilder.append((searchOrder.isAsc() ? "asc" : "desc"));
+            stringBuilder.append((dataTableParameters.isAsc() ? "asc" : "desc"));
         }
         
         Query<T_ENTITY> query = session.createQuery(stringBuilder.toString(),getClazz());
-        if ((searchOrder.getSearchMap() != null) && !searchOrder.getSearchMap().isEmpty())
+        if ((dataTableParameters.getSearchMap() != null) && !dataTableParameters.getSearchMap().isEmpty())
         {
-            for (String field : searchOrder.getSearchMap().keySet())
+            for (String field : dataTableParameters.getSearchMap().keySet())
             {
                 String parameterName = "_" + field + "_PARAM";
-                Object value = searchOrder.getSearchMap().get(field);
+                Object value = dataTableParameters.getSearchMap().get(field);
                 if (value instanceof String)
                 {
                     query.setParameter(parameterName, "%" + value + "%");
@@ -111,14 +109,14 @@ public class JdhHibernateDao<T_ENTITY>
             }
         }
         
-        if (maxResults > 0)
+        if (dataTableParameters.getMaxResults() > 0)
         {
-            query.setMaxResults(maxResults);
+            query.setMaxResults(dataTableParameters.getMaxResults());
         }
 
-        if (firstResult > -1)
+        if (dataTableParameters.getFirstResult() > -1)
         {
-            query.setFirstResult(firstResult);
+            query.setFirstResult(dataTableParameters.getFirstResult());
         }
 
         List<T_ENTITY> result = query.getResultList();

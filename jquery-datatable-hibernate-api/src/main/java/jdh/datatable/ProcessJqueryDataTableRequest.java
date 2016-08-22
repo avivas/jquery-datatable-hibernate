@@ -5,6 +5,8 @@ import java.util.TreeMap;
 
 public final class ProcessJqueryDataTableRequest
 {
+    private static final String START = "start";
+    private static final String LENGTH = "length";
     private static final String DATA2 = "][data]";
     private static final String COLUMNS = "columns[";
     private static final String DATA = "[data]";
@@ -13,29 +15,63 @@ public final class ProcessJqueryDataTableRequest
     private static final String PARAMETER_NAME_COLUMN_ORDER_INDEX = "order[0][column]";
     private static final String PARAMETER_NAME_ORDER = "order[0][dir]";
 
-    public static SearchOrder getSearchOrder(Map<String, String[]> parameters, MapNameFieldValue mapNameFieldValue)
+    public static DataTableParameters getDataTableParameters(Map<String, String[]> parameters, MapNameFieldValue mapNameFieldValue)
     {
-        SearchOrder searchOrder = getOrder(parameters, mapNameFieldValue);
+        DataTableParameters searchOrder = getOrder(parameters, mapNameFieldValue);
         Map<String, Object> searchMap = getSearchMap(parameters, mapNameFieldValue);
         searchOrder.setSearchMap(searchMap);
         return searchOrder;
     }
 
-    private static SearchOrder getOrder(Map<String, String[]> parameters, MapNameFieldValue mapNameFieldValue)
+    private static DataTableParameters getOrder(Map<String, String[]> parameters, MapNameFieldValue mapNameFieldValue)
     {
-        int columnOrderIndex = Integer.parseInt(parameters.get(PARAMETER_NAME_COLUMN_ORDER_INDEX)[0]);
-        String columnOrderName = parameters.get(COLUMNS + columnOrderIndex + DATA2)[0];
-
-        String order = parameters.get(PARAMETER_NAME_ORDER)[0];
+        int columnOrderIndex = getColumnOrderIndex(parameters);
+        String columnOrderName = getColumnOrderName(parameters, columnOrderIndex);
+        String order = getOrder(parameters);
+        Boolean asc = (order == null) ? false : order.equals(ASC);
+        int start = getStart(parameters);
+        int length = getLength(parameters);
 
         if (mapNameFieldValue == null)
         {
-            return new SearchOrder(columnOrderName, order.equals(ASC));
+            return new DataTableParameters(columnOrderName, asc, start, length);
         }
         else
         {
-            return new SearchOrder(mapNameFieldValue.getEntityFieldName(columnOrderName), order.equals(ASC));
+            return new DataTableParameters(mapNameFieldValue.getEntityFieldName(columnOrderName), asc, start, length);
         }
+    }
+
+    private static int getStart(Map<String, String[]> parameters)
+    {
+        String[] arrayStart = parameters.get(START);
+        if(arrayStart == null)
+        {
+            return -1;
+        }
+        
+        String start = parameters.get(START)[0];
+        if (start != null && start.trim().length() == 0)
+        {
+            return -1;
+        }
+        return Integer.parseInt(start);
+    }
+
+    private static int getLength(Map<String, String[]> parameters)
+    {
+        String[] arrayLength = parameters.get(LENGTH);
+        if(arrayLength == null)
+        {
+            return -1;
+        }
+        
+        String length = arrayLength[0];
+        if (length != null && length.trim().length() == 0)
+        {
+            return -1;
+        }
+        return Integer.parseInt(length);
     }
 
     private static Map<String, Object> getSearchMap(Map<String, String[]> parameters, MapNameFieldValue mapNameFieldValue)
@@ -62,5 +98,45 @@ public final class ProcessJqueryDataTableRequest
             }
         }
         return filter;
+    }
+
+    private static String getOrder(Map<String, String[]> parameters)
+    {
+        String[] arrayOrder = parameters.get(PARAMETER_NAME_ORDER);
+        if(arrayOrder == null)
+        {
+            return null;
+        }
+        
+        String order = arrayOrder[0];
+        if (order != null && order.trim().length() == 0)
+        {
+            return null;
+        }
+        return order;
+    }
+
+    private static int getColumnOrderIndex(Map<String, String[]> parameters)
+    {
+        int columnOrderIndex = -1;
+        String[] arrayColumnOrderIndex = parameters.get(PARAMETER_NAME_COLUMN_ORDER_INDEX);
+        if (arrayColumnOrderIndex != null)
+        {
+            String stringColumnOrderIndex = arrayColumnOrderIndex[0];
+            if (stringColumnOrderIndex != null && stringColumnOrderIndex.trim().length() > 0)
+            {
+                columnOrderIndex = Integer.parseInt(parameters.get(PARAMETER_NAME_COLUMN_ORDER_INDEX)[0]);
+            }
+        }
+        return columnOrderIndex;
+    }
+
+    private static String getColumnOrderName(Map<String, String[]> parameters, int columnOrderIndex)
+    {
+        if (columnOrderIndex > -1)
+        {
+            return parameters.get(COLUMNS + columnOrderIndex + DATA2)[0];
+        }
+        return null;
     }
 }
