@@ -71,7 +71,7 @@ public class JdhHibernateDao<T_ENTITY>
                     stringBuilder.append(" = :_");
                 }
 
-                stringBuilder.append(field);
+                stringBuilder.append(field.replace('.', '_'));
                 stringBuilder.append("_PARAM");
 
                 if (fields.hasNext())
@@ -96,7 +96,7 @@ public class JdhHibernateDao<T_ENTITY>
         {
             for (String field : dataTableParameters.getSearchMap().keySet())
             {
-                String parameterName = "_" + field + "_PARAM";
+                String parameterName = "_" + field.replace('.', '_') + "_PARAM";
                 Object value = dataTableParameters.getSearchMap().get(field);
                 if (value instanceof String)
                 {
