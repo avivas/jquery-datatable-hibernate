@@ -10,7 +10,7 @@ public class DataTableParameters
     private String field;
     private boolean asc = true;
     private Map<String, Object> searchMap;
-    private String draw;
+    private int draw;
 
     public DataTableParameters(String field, boolean asc,int firstResult,int maxResults)
     {
@@ -70,12 +70,12 @@ public class DataTableParameters
         this.firstResult = firstResult;
     }    
     
-    public void setDraw(String draw)
+    public void setDraw(int draw)
     {
         this.draw = draw;
     }
     
-    public String getDraw()
+    public int getDraw()
     {
         return draw;
     }

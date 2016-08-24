@@ -22,7 +22,7 @@ public final class ProcessJqueryDataTableRequest
         Map<String, Object> searchMap = getSearchMap(parameters, mapNameFieldValue);
         dataTableParameters.setSearchMap(searchMap);
 
-        String draw = getDraw(parameters);
+        int draw = getDraw(parameters);
         dataTableParameters.setDraw(draw);
         
         return dataTableParameters;
@@ -150,13 +150,20 @@ public final class ProcessJqueryDataTableRequest
     }
 
     
-    private static String getDraw(Map<String, String[]> parameters)
+    private static int getDraw(Map<String, String[]> parameters)
     {
         String [] arrayDraw = parameters.get(DRAW);
         if(arrayDraw != null )
         {
-            return arrayDraw[0];
+            try
+            {
+                return Integer.parseInt(arrayDraw[0]);
+            }
+            catch(Exception e)
+            {
+                return -1;
+            }
         }
-        return null;
+        return -1;
     }
 }
