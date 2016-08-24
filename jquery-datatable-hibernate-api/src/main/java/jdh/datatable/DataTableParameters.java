@@ -4,12 +4,13 @@ import java.util.Map;
 
 public class DataTableParameters
 {
-    //TODO AGREGAR PARMETRO DE LIKE 'VALOR%' o '%VALOR'
+    // TODO add parameter to search LIKE 'VALUE%' o '%VALUE'
     private int maxResults;
     private int firstResult;
     private String field;
     private boolean asc = true;
     private Map<String, Object> searchMap;
+    private String draw;
 
     public DataTableParameters(String field, boolean asc,int firstResult,int maxResults)
     {
@@ -68,4 +69,14 @@ public class DataTableParameters
     {
         this.firstResult = firstResult;
     }    
+    
+    public void setDraw(String draw)
+    {
+        this.draw = draw;
+    }
+    
+    public String getDraw()
+    {
+        return draw;
+    }
 }

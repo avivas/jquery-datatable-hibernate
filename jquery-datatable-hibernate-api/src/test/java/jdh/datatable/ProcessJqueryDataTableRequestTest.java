@@ -96,6 +96,14 @@ public class ProcessJqueryDataTableRequestTest
         Assert.assertNull(dataTableParameters.getField());
     }
     
+    @Test
+    public void getDataTableParametersDraw()
+    {
+        Map<String, String[]> parameters = createDefaultMapParameters();
+        DataTableParameters dataTableParameters = ProcessJqueryDataTableRequest.getDataTableParameters(parameters, null);
+        Assert.assertEquals("1", dataTableParameters.getDraw());
+    }
+    
     private static  Map<String, String[]> createDefaultMapParameters()
     {
         Map<String, String[]> parameters = new HashMap<String, String[]>();

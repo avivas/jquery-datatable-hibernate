@@ -17,10 +17,14 @@ public final class ProcessJqueryDataTableRequest
 
     public static DataTableParameters getDataTableParameters(Map<String, String[]> parameters, MapNameFieldValue mapNameFieldValue)
     {
-        DataTableParameters searchOrder = getOrder(parameters, mapNameFieldValue);
+        DataTableParameters dataTableParameters = getOrder(parameters, mapNameFieldValue);
         Map<String, Object> searchMap = getSearchMap(parameters, mapNameFieldValue);
-        searchOrder.setSearchMap(searchMap);
-        return searchOrder;
+        dataTableParameters.setSearchMap(searchMap);
+        
+        String draw = getDraw(parameters);
+        dataTableParameters.setDraw(draw);
+        
+        return dataTableParameters;
     }
 
     private static DataTableParameters getOrder(Map<String, String[]> parameters, MapNameFieldValue mapNameFieldValue)
@@ -76,7 +80,7 @@ public final class ProcessJqueryDataTableRequest
 
     private static Map<String, Object> getSearchMap(Map<String, String[]> parameters, MapNameFieldValue mapNameFieldValue)
     {
-        Map<String, Object> filter = new TreeMap<String, Object>();
+        Map<String, Object> searchMap = new TreeMap<String, Object>();
 
         for (String name : parameters.keySet())
         {
@@ -88,16 +92,16 @@ public final class ProcessJqueryDataTableRequest
                 if (mapNameFieldValue == null)
                 {
                     value = parameters.get(name)[0];
-                    filter.put(fieldName, value);
+                    searchMap.put(fieldName, value);
                 }
                 else
                 {
                     value = mapNameFieldValue.getSearchValue(fieldName, parameters.get(name)[0]);
-                    filter.put(mapNameFieldValue.getEntityFieldName(fieldName), value);
+                    searchMap.put(mapNameFieldValue.getEntityFieldName(fieldName), value);
                 }
             }
         }
-        return filter;
+        return searchMap;
     }
 
     private static String getOrder(Map<String, String[]> parameters)
@@ -136,6 +140,16 @@ public final class ProcessJqueryDataTableRequest
         if (columnOrderIndex > -1)
         {
             return parameters.get(COLUMNS + columnOrderIndex + DATA2)[0];
+        }
+        return null;
+    }
+    
+    private static String getDraw(Map<String, String[]> parameters)
+    {
+        String [] arrayDraw = parameters.get("draw");
+        if(arrayDraw != null )
+        {
+            return arrayDraw[0];
         }
         return null;
     }
