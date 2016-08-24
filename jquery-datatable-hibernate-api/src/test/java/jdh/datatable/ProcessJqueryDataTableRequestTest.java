@@ -53,6 +53,49 @@ public class ProcessJqueryDataTableRequestTest
         Assert.assertTrue(dataTableParameters.getSearchMap().containsKey("group"));
     }
     
+    private class UserMapNameFieldValue implements MapNameFieldValue
+    {
+        private Map<String, String> mapFieldName = new HashMap<String, String>();
+        
+        public UserMapNameFieldValue()
+        {
+            mapFieldName.put("nameParameter", "name");
+            mapFieldName.put("groupParameter", "group");
+            mapFieldName.put("descriptionParameter", "description");
+            mapFieldName.put("valueParameter", "value");
+            mapFieldName.put("typeParameter", "type");
+        }
+        
+        @Override
+        public Object getSearchValue(String nameField, Object value)
+        {
+            return value;
+        }
+        
+        @Override
+        public String getEntityFieldName(String nameFieldRequest)
+        {
+            return mapFieldName.get(nameFieldRequest);
+        }
+    };
+    
+    @Test
+    public void getDataTableParametersSearchNameInjection()
+    {
+        Map<String, String[]> parameters = createDefaultMapParameters();
+        parameters.put("columns[0][data]", new String[]{"delete from User"});
+        parameters.put("columns[1][data]", new String[]{"groupParameter"});       
+        parameters.put("columns[2][data]", new String[]{"descriptionParameter"});
+        parameters.put("columns[3][data]", new String[]{"valueParameter"});
+        parameters.put("columns[4][data]", new String[]{"typeParameter"});
+        
+        UserMapNameFieldValue mapNameFieldValue = new UserMapNameFieldValue();
+                
+        DataTableParameters dataTableParameters = ProcessJqueryDataTableRequest.getDataTableParameters(parameters, mapNameFieldValue);
+        
+        Assert.assertNull(dataTableParameters.getField());
+    }
+    
     private static  Map<String, String[]> createDefaultMapParameters()
     {
         Map<String, String[]> parameters = new HashMap<String, String[]>();

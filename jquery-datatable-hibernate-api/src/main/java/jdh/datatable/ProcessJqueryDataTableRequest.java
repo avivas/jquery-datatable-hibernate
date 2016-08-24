@@ -88,13 +88,13 @@ public final class ProcessJqueryDataTableRequest
                 if (mapNameFieldValue == null)
                 {
                     value = parameters.get(name)[0];
+                    filter.put(fieldName, value);
                 }
                 else
                 {
                     value = mapNameFieldValue.getSearchValue(fieldName, parameters.get(name)[0]);
+                    filter.put(mapNameFieldValue.getEntityFieldName(fieldName), value);
                 }
-
-                filter.put(fieldName, value);
             }
         }
         return filter;
