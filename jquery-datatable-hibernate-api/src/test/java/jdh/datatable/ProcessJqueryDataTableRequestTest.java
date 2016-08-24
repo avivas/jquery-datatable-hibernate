@@ -80,7 +80,7 @@ public class ProcessJqueryDataTableRequestTest
     };
     
     @Test
-    public void getDataTableParametersSearchNameInjection()
+    public void getDataTableParametersOrderInjection()
     {
         Map<String, String[]> parameters = createDefaultMapParameters();
         parameters.put("columns[0][data]", new String[]{"delete from User"});
@@ -94,6 +94,25 @@ public class ProcessJqueryDataTableRequestTest
         DataTableParameters dataTableParameters = ProcessJqueryDataTableRequest.getDataTableParameters(parameters, mapNameFieldValue);
         
         Assert.assertNull(dataTableParameters.getField());
+    }
+    
+    @Test
+    public void getDataTableParametersSearchOrderInjection()
+    {
+        Map<String, String[]> parameters = createDefaultMapParameters();
+        parameters.put("columns[0][data]", new String[]{"delete from User"});
+        parameters.put("columns[1][data]", new String[]{"delete from User"});       
+        parameters.put("columns[2][data]", new String[]{"descriptionParameter"});
+        parameters.put("columns[3][data]", new String[]{"valueParameter"});
+        parameters.put("columns[4][data]", new String[]{"typeParameter"});
+        parameters.put("columns[1][search][value]", new String[]{"update User set login='qaz'"});
+        
+        UserMapNameFieldValue mapNameFieldValue = new UserMapNameFieldValue();
+                
+        DataTableParameters dataTableParameters = ProcessJqueryDataTableRequest.getDataTableParameters(parameters, mapNameFieldValue);
+        
+        Assert.assertNull(dataTableParameters.getField());
+        Assert.assertTrue(dataTableParameters.getSearchMap().isEmpty());
     }
     
     @Test

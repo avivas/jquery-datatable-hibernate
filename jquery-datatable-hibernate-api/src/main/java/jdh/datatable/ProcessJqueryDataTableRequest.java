@@ -5,6 +5,7 @@ import java.util.TreeMap;
 
 public final class ProcessJqueryDataTableRequest
 {
+    private static final String DRAW = "draw";
     private static final String START = "start";
     private static final String LENGTH = "length";
     private static final String DATA2 = "][data]";
@@ -20,7 +21,7 @@ public final class ProcessJqueryDataTableRequest
         DataTableParameters dataTableParameters = getOrder(parameters, mapNameFieldValue);
         Map<String, Object> searchMap = getSearchMap(parameters, mapNameFieldValue);
         dataTableParameters.setSearchMap(searchMap);
-        
+
         String draw = getDraw(parameters);
         dataTableParameters.setDraw(draw);
         
@@ -49,11 +50,11 @@ public final class ProcessJqueryDataTableRequest
     private static int getStart(Map<String, String[]> parameters)
     {
         String[] arrayStart = parameters.get(START);
-        if(arrayStart == null)
+        if (arrayStart == null)
         {
             return -1;
         }
-        
+
         String start = parameters.get(START)[0];
         if (start != null && start.trim().length() == 0)
         {
@@ -65,11 +66,11 @@ public final class ProcessJqueryDataTableRequest
     private static int getLength(Map<String, String[]> parameters)
     {
         String[] arrayLength = parameters.get(LENGTH);
-        if(arrayLength == null)
+        if (arrayLength == null)
         {
             return -1;
         }
-        
+
         String length = arrayLength[0];
         if (length != null && length.trim().length() == 0)
         {
@@ -96,8 +97,12 @@ public final class ProcessJqueryDataTableRequest
                 }
                 else
                 {
-                    value = mapNameFieldValue.getSearchValue(fieldName, parameters.get(name)[0]);
-                    searchMap.put(mapNameFieldValue.getEntityFieldName(fieldName), value);
+                    String entityNameField = mapNameFieldValue.getEntityFieldName(fieldName);
+                    if (entityNameField != null)
+                    {
+                        value = mapNameFieldValue.getSearchValue(fieldName, parameters.get(name)[0]);
+                        searchMap.put(entityNameField, value);
+                    }
                 }
             }
         }
@@ -107,11 +112,11 @@ public final class ProcessJqueryDataTableRequest
     private static String getOrder(Map<String, String[]> parameters)
     {
         String[] arrayOrder = parameters.get(PARAMETER_NAME_ORDER);
-        if(arrayOrder == null)
+        if (arrayOrder == null)
         {
             return null;
         }
-        
+
         String order = arrayOrder[0];
         if (order != null && order.trim().length() == 0)
         {
@@ -143,10 +148,11 @@ public final class ProcessJqueryDataTableRequest
         }
         return null;
     }
+
     
     private static String getDraw(Map<String, String[]> parameters)
     {
-        String [] arrayDraw = parameters.get("draw");
+        String [] arrayDraw = parameters.get(DRAW);
         if(arrayDraw != null )
         {
             return arrayDraw[0];
