@@ -1,5 +1,6 @@
 package jdh.datatable;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class DataTableParameters
@@ -10,6 +11,7 @@ public class DataTableParameters
     private String field;
     private boolean asc = true;
     private Map<String, Object> searchMap;
+    private Map<String,Object> customFilter = new HashMap<String, Object>();
     private int draw;
 
     public DataTableParameters(String field, boolean asc,int firstResult,int maxResults)
@@ -79,4 +81,14 @@ public class DataTableParameters
     {
         return draw;
     }
+    
+    public void setCustomFilter(Map<String, Object> customFilter) 
+    {
+		this.customFilter = customFilter;
+	}
+    
+    public Map<String, Object> getCustomFilter() 
+    {
+		return customFilter;
+	}
 }

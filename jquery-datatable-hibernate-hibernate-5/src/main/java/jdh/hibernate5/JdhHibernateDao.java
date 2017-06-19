@@ -9,10 +9,10 @@ import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.Metamodel;
 
-import jdh.datatable.DataTableParameters;
-
 import org.hibernate.Session;
 import org.hibernate.query.Query;
+
+import jdh.datatable.DataTableParameters;
 
 
 public class JdhHibernateDao<T_ENTITY>
@@ -27,6 +27,13 @@ public class JdhHibernateDao<T_ENTITY>
     {
         this.entityAlias = "_" + clazz.getSimpleName();
         this.allQuery = "from " + clazz.getName() + " as " + entityAlias;
+        this.clazz = clazz;
+    }
+    
+    public JdhHibernateDao(String entityAlias,String allQuery,Class<T_ENTITY> clazz)
+    {
+        this.entityAlias = entityAlias;
+        this.allQuery = allQuery;
         this.clazz = clazz;
     }
 
@@ -79,6 +86,36 @@ public class JdhHibernateDao<T_ENTITY>
                     stringBuilder.append(" and ");
                 }
             }
+        }
+        
+        if ((dataTableParameters.getSearchMap() == null) || dataTableParameters.getSearchMap().isEmpty() && !dataTableParameters.getCustomFilter().isEmpty() )
+        {
+            stringBuilder.append(" where ");
+        }
+        else
+        {
+        	stringBuilder.append(" ");
+        }
+        
+        if (    (dataTableParameters.getSearchMap() != null) 
+        	 && !dataTableParameters.getSearchMap().isEmpty() 
+        	 && (dataTableParameters.getCustomFilter() != null )
+        	 && !dataTableParameters.getCustomFilter().isEmpty() )
+        {
+            stringBuilder.append(" and ");
+        }
+        
+        Iterator<String> customFilterIterator = dataTableParameters.getCustomFilter().keySet().iterator();
+        while(customFilterIterator.hasNext())
+        {
+        	String field = customFilterIterator.next();
+        	stringBuilder.append(field);
+        	stringBuilder.append( dataTableParameters.getCustomFilter().get(field) );
+        	
+        	if(customFilterIterator.hasNext())
+        	{
+        		 stringBuilder.append(" and ");
+        	}
         }
 
         if (dataTableParameters.getField() != null)

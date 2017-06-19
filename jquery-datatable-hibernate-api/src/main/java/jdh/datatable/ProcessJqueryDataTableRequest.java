@@ -93,7 +93,18 @@ public final class ProcessJqueryDataTableRequest
                 if (mapNameFieldValue == null)
                 {
                     value = parameters.get(name)[0];
-                    searchMap.put(fieldName, value);
+                    if(value.equals("true") )
+                    {
+                    	searchMap.put(fieldName, true);
+                    }
+                    else if(value.equals("false"))
+                    {
+                    	searchMap.put(fieldName, false);
+                    }
+                    else
+                    {
+                    	searchMap.put(fieldName, value);
+                    }                    
                 }
                 else
                 {
@@ -101,7 +112,18 @@ public final class ProcessJqueryDataTableRequest
                     if (entityNameField != null)
                     {
                         value = mapNameFieldValue.getSearchValue(fieldName, parameters.get(name)[0]);
-                        searchMap.put(entityNameField, value);
+                        if(value.equals("true") )
+                        {
+                        	searchMap.put(fieldName, true);
+                        }
+                        else if(value.equals("false"))
+                        {
+                        	searchMap.put(fieldName, false);
+                        }
+                        else
+                        {
+                        	searchMap.put(entityNameField, value);
+                        }
                     }
                 }
             }
