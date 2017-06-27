@@ -19,21 +19,36 @@ public class JdhHibernateDao<T_ENTITY>
 {
     private Class<T_ENTITY> clazz;
     private String allQuery;
+    private String countAllQuery;
     private String entityAlias;
+    private String countEntityAlias;
     private String allQueryWithRelations;
     private JdhSessionFactory sessionFactory; 
 
     public JdhHibernateDao(Class<T_ENTITY> clazz)
     {
         this.entityAlias = "_" + clazz.getSimpleName();
+        this.countEntityAlias = entityAlias;
         this.allQuery = "from " + clazz.getName() + " as " + entityAlias;
+        this.countAllQuery = "select count(" + this.entityAlias + ") " + allQuery;
         this.clazz = clazz;
     }
     
     public JdhHibernateDao(String entityAlias,String allQuery,Class<T_ENTITY> clazz)
     {
         this.entityAlias = entityAlias;
+        this.countEntityAlias = entityAlias;
         this.allQuery = allQuery;
+        this.countAllQuery = "select count(" + this.countEntityAlias + ") " + allQuery;
+        this.clazz = clazz;
+    }
+    
+    public JdhHibernateDao(String entityAlias,String countEntityAlias,String allQuery,Class<T_ENTITY> clazz)
+    {
+        this.entityAlias = entityAlias;
+        this.countEntityAlias = countEntityAlias;
+        this.allQuery = allQuery;
+        this.countAllQuery = "select count(" + this.countEntityAlias + ") " + allQuery;
         this.clazz = clazz;
     }
 
@@ -47,12 +62,61 @@ public class JdhHibernateDao<T_ENTITY>
         createQueryWithRelations();
         return search(allQueryWithRelations,dataTableParameters);
     }
+    
+    public Number count(DataTableParameters dataTableParameters)
+    {
+    	Session session = this.getCurrentSession();
+    	Query<Number> query = createQuery(this.countAllQuery,dataTableParameters,session,Number.class,false);
+    	return query.getSingleResult();
+    }
 
     private List<T_ENTITY> search(String baseQuery,DataTableParameters dataTableParameters)
     {
         Session session = this.getCurrentSession();
+        
+        Query<T_ENTITY> query = createQuery(baseQuery,dataTableParameters,session,getClazz(),true);
+        
+        if (dataTableParameters.getMaxResults() > 0)
+        {
+            query.setMaxResults(dataTableParameters.getMaxResults());
+        }
 
-        StringBuilder stringBuilder = new StringBuilder(baseQuery);
+        if (dataTableParameters.getFirstResult() > -1)
+        {
+            query.setFirstResult(dataTableParameters.getFirstResult());
+        }
+
+        List<T_ENTITY> result = query.getResultList();
+
+        return result;
+    }
+    
+    private <TYPE> Query<TYPE> createQuery(String baseQuery,DataTableParameters dataTableParameters,Session session,Class<TYPE> clazz,boolean order)
+    {
+    	String stringQuery = createHqlQuery(baseQuery,dataTableParameters,order);
+    	Query<TYPE> query = session.createQuery(stringQuery,clazz);
+        if ((dataTableParameters.getSearchMap() != null) && !dataTableParameters.getSearchMap().isEmpty())
+        {
+            for (String field : dataTableParameters.getSearchMap().keySet())
+            {
+                String parameterName = "_" + field.replace('.', '_') + "_PARAM";
+                Object value = dataTableParameters.getSearchMap().get(field);
+                if (value instanceof String)
+                {
+                    query.setParameter(parameterName, "%" + value + "%");
+                }
+                else
+                {
+                    query.setParameter(parameterName, value);
+                }
+            }
+        }
+        return query;
+    }
+    
+    private String createHqlQuery(String baseQuery,DataTableParameters dataTableParameters,boolean order)
+    {
+    	StringBuilder stringBuilder = new StringBuilder(baseQuery);
         
         if ((dataTableParameters.getSearchMap() != null) && !dataTableParameters.getSearchMap().isEmpty())
         {
@@ -97,6 +161,7 @@ public class JdhHibernateDao<T_ENTITY>
         	stringBuilder.append(" ");
         }
         
+        
         if (    (dataTableParameters.getSearchMap() != null) 
         	 && !dataTableParameters.getSearchMap().isEmpty() 
         	 && (dataTableParameters.getCustomFilter() != null )
@@ -118,7 +183,7 @@ public class JdhHibernateDao<T_ENTITY>
         	}
         }
 
-        if (dataTableParameters.getField() != null)
+        if (dataTableParameters.getField() != null && order)
         {
             stringBuilder.append(" order by ");
             stringBuilder.append(this.entityAlias);
@@ -128,37 +193,7 @@ public class JdhHibernateDao<T_ENTITY>
             stringBuilder.append((dataTableParameters.isAsc() ? "asc" : "desc"));
         }
         
-        Query<T_ENTITY> query = session.createQuery(stringBuilder.toString(),getClazz());
-        if ((dataTableParameters.getSearchMap() != null) && !dataTableParameters.getSearchMap().isEmpty())
-        {
-            for (String field : dataTableParameters.getSearchMap().keySet())
-            {
-                String parameterName = "_" + field.replace('.', '_') + "_PARAM";
-                Object value = dataTableParameters.getSearchMap().get(field);
-                if (value instanceof String)
-                {
-                    query.setParameter(parameterName, "%" + value + "%");
-                }
-                else
-                {
-                    query.setParameter(parameterName, value);
-                }
-            }
-        }
-        
-        if (dataTableParameters.getMaxResults() > 0)
-        {
-            query.setMaxResults(dataTableParameters.getMaxResults());
-        }
-
-        if (dataTableParameters.getFirstResult() > -1)
-        {
-            query.setFirstResult(dataTableParameters.getFirstResult());
-        }
-
-        List<T_ENTITY> result = query.getResultList();
-
-        return result;
+        return stringBuilder.toString();
     }
 
     private void createQueryWithRelations()
