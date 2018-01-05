@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xml>
+<configuration monitorInterval="60">
+	<!-- Use system property -DLog4jContextSelector=org.apache.logging.log4j.core.async.AsyncLoggerContextSelector 
+		to support async logger -->
+	<appenders>
+		<Console name="Console" target="SYSTEM_OUT">
+			<PatternLayout
+				pattern="[%d{dd-MM-yyyy HH:mm:ss}] [%t] %p [%c{3} %M %L] - %m%n" />
+		</Console>
+		<RollingRandomAccessFile name="RollingRandomAccessFile"
+			fileName="${project.build.directory}/logs/jdh-test.log"
+			filePattern="${project.build.directory}/logs/$${date:yyyy-MM}/jdh-test-%d{MM-dd-yyyy}-%i.log"
+			bufferSize="4096" immediateFlush="false" ignoreExceptions="false">
+			<PatternLayout
+				pattern="[%d{dd-MM-yyyy HH:mm:ss}] [%t] %p [%c{3} %M %L] - %m%n" />
+			<Policies>
+				<TimeBasedTriggeringPolicy />
+				<SizeBasedTriggeringPolicy size="10 MB" />
+			</Policies>
+			<DefaultRolloverStrategy max="31" />
+		</RollingRandomAccessFile>
+		<!--  Configuration to see the log immediately. Don't use on production
+		 <RollingFile name="RollingFile" fileName="${project.build.directory}/logs/jdh-test.log" 
+			filePattern="${project.build.directory}/logs/$${date:yyyy-MM}/debug-%d{MM-dd-yyyy}-%i.log.gz"> 
+			<PatternLayout pattern="[%d{dd-MM-yyyy HH:mm:ss}] [%t] %p [%c{3} %M %L] 
+			- %m%n" /> <Policies> <TimeBasedTriggeringPolicy /> <SizeBasedTriggeringPolicy 
+			size="10 MB"/> </Policies> <DefaultRolloverStrategy max="31"/> </RollingFile> -->
+	</appenders>
+	<loggers>
+		<logger name="jdh.hibernate5" level="INFO" includeLocation="true" />
+		<logger name="org.springframework" level="ERROR" includeLocation="false" />
+		<logger name="org.hibernate" level="ERROR" includeLocation="false" />
+		<logger name="org.hsqldb" level="ERROR" includeLocation="false" />
+		<logger name="com.mchange" level="ERROR" includeLocation="false" />
+		<logger name="net.sf" level="ERROR" includeLocation="false" />
+		<root level="INFO" includeLocation="true">
+			<!-- Remove comments to see log on console. -->
+			<appender-ref ref="Console" />
+			<appender-ref ref="RollingRandomAccessFile" />
+			<!-- Configuration to see the log immediately. Don't use on production 
+			<appender-ref ref="RollingFile"/> -->
+		</root>
+	</loggers>
+</configuration>

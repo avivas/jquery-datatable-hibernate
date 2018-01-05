@@ -6,7 +6,6 @@
 		<groupId>jquery-datatable-hibernate</groupId>
 		<artifactId>jquery-datatable-hibernate</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
-		<relativePath>jquery-datatable-hibernate/pom.xml</relativePath>
 	</parent>
 	
 	<artifactId>jquery-datatable-hibernate-hibernate-5</artifactId>
@@ -35,13 +34,43 @@
 			<version>[5.2.2.Final,)</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-core</artifactId>
+			<version>[2.6,)</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
+		<resources>
+			<resource>
+				<directory>${project.basedir}/src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
+		<testResources>
+			<testResource>
+				<directory>${project.basedir}/src/test/resources</directory>
+				<filtering>true</filtering>
+			</testResource>
+		</testResources>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>${maven-surefire-plugin.version}</version>
+				<configuration>
+					<argLine>
+						-Dlog4j.configurationFile=${project.build.directory}/test-classes/log4j2.xml
+						-DLog4jContextSelector=org.apache.logging.log4j.core.async.AsyncLoggerContextSelector
+					</argLine>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>
+				<version>3.0.1</version>
 				<executions>
 					<execution>
 						<id>attach-sources</id>
@@ -54,6 +83,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>3.0.0</version>
 				<executions>
 					<execution>
 						<id>attach-javadocs</id>
@@ -69,6 +99,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
+					<version>3.7.0</version>
 					<configuration>
 						<source>1.8</source>
 						<target>1.8</target>
