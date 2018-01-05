@@ -2,15 +2,15 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>jquery-datatable-hibernate-hibernate-5</artifactId>
-	<name>jquery-datatable-hibernate-hibernate-5</name>
-
 	<parent>
 		<groupId>jquery-datatable-hibernate</groupId>
 		<artifactId>jquery-datatable-hibernate</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
-		<relativePath>../jquery-datatable-hibernate/pom.xml</relativePath>
+		<relativePath>jquery-datatable-hibernate/pom.xml</relativePath>
 	</parent>
+	
+	<artifactId>jquery-datatable-hibernate-hibernate-5</artifactId>
+	<name>jquery-datatable-hibernate-hibernate-5</name>
 
 	<dependencies>
 		<dependency>

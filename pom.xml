@@ -8,8 +8,8 @@
 	<packaging>pom</packaging>
 
 	<modules>
-		<module>../jquery-datatable-hibernate-api</module>
-		<module>../jquery-datatable-hibernate-hibernate-5</module>
+		<module>jquery-datatable-hibernate-api</module>
+		<module>jquery-datatable-hibernate-hibernate-5</module>
 	</modules>
 
 	<properties>
